@@ -14,6 +14,7 @@
       --sidebar-bg: #141414;
       --border-color: rgba(255, 255, 255, 0.1);
       --panel-bg: linear-gradient(135deg, #1f0b2e 0%, #0d0d0d 100%);
+      --slide-duration: 5s; /* Tiempo de cada clip */
     }
 
     body.mode-music {
@@ -26,304 +27,78 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); transition: all 0.5s ease; display: flex; height: 100vh; overflow: hidden; }
+
+    /* SIDEBAR */
+    .sidebar { width: 180px; background-color: var(--sidebar-bg); padding: 30px 20px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--border-color); z-index: 30; }
+    .brand { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .brand img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid var(--text-color); }
+    .brand h1 { font-size: 1rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+
+    .nav-links { display: flex; flex-direction: column; gap: 25px; margin-top: -60px; }
+    .nav-item { color: var(--text-color); font-size: 1.4rem; font-weight: 900; text-transform: lowercase; letter-spacing: 1px; opacity: 0.4; background: none; border: none; text-align: left; cursor: pointer; transition: all 0.3s ease; }
+    .nav-item:hover, .nav-item.active { opacity: 1; color: var(--accent); transform: translateX(5px); }
+
+    .switch-wrapper { display: flex; flex-direction: column; gap: 8px; }
+    .switch-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.4; font-weight: 600; }
+    .toggle-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-color); padding: 8px 12px; font-size: 0.75rem; font-weight: 900; font-variant: small-caps; letter-spacing: 1px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-radius: 4px; transition: all 0.3s ease; }
+    .toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .status-dot { width: 6px; height: 6px; background-color: var(--accent); border-radius: 50%; box-shadow: 0 0 8px var(--accent); }
+
+    /* LIENZO */
+    .main-content { flex-grow: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 40px; }
+    .world { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; padding: 40px; }
     
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      transition: background-color 0.5s ease, color 0.5s ease;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-    }
+    body:not(.mode-music):not(.mode-bio):not(.mode-contact) #world-av { display: flex; }
+    body.mode-music:not(.mode-bio):not(.mode-contact) #world-music { display: flex; }
 
-    /* --- SIDEBAR (MÁS ESTRECHA) --- */
-    .sidebar {
-      width: 180px; 
-      background-color: var(--sidebar-bg);
-      padding: 30px 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border-right: 1px solid var(--border-color);
-      transition: background-color 0.5s ease, border-color 0.5s ease;
-      z-index: 30;
-    }
+    /* ESTILO DELTA CAFÉS (AUTO-PLAYER) */
+    .player-container { width: 100%; max-width: 1200px; aspect-ratio: 16 / 9; background-color: #000; border: 1px solid var(--border-color); position: relative; overflow: hidden; border-radius: 4px; cursor: pointer; }
+    .player-container:hover .external-link-icon { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+    
+    .media-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0; transition: opacity 0.8s ease; }
+    .media-layer.active { opacity: 0.6; }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-    }
+    /* UI: Barras de progreso */
+    .progress-ui { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; gap: 10px; z-index: 10; }
+    .progress-track { flex: 1; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0; background: var(--text-color); }
+    .media-layer.active .progress-fill { animation: fillBar var(--slide-duration) linear forwards; }
+    .media-layer.viewed .progress-fill { width: 100%; animation: none; }
+    @keyframes fillBar { from { width: 0; } to { width: 100%; } }
 
-    .brand img {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid var(--text-color);
-      transition: border-color 0.5s ease;
-    }
+    /* UI: Título Retro */
+    .retro-title { position: absolute; bottom: 20px; left: 20px; font-family: 'Courier New', Courier, monospace; font-size: 1.2rem; font-weight: bold; color: var(--text-color); z-index: 10; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+    
+    .external-link-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; color: #fff; opacity: 0; transition: all 0.3s ease; text-shadow: 0 0 10px rgba(0,0,0,0.5); z-index: 10; }
 
-    .brand h1 {
-      font-size: 1rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    /* --- NAVEGACIÓN (TÍTULOS MÁS GRANDES) --- */
-    .nav-links {
-      display: flex;
-      flex-direction: column;
-      gap: 25px;
-      margin-top: -60px;
-    }
-
-    .nav-item {
-      color: var(--text-color);
-      text-decoration: none;
-      font-size: 1.4rem; /* Títulos aumentados */
-      font-weight: 900;
-      text-transform: lowercase;
-      letter-spacing: 1px;
-      opacity: 0.4;
-      background: none;
-      border: none;
-      text-align: left;
-      cursor: pointer;
-      transition: opacity 0.3s ease, color 0.3s ease, transform 0.3s ease;
-    }
-
-    .nav-item:hover, .nav-item.active {
-      opacity: 1;
-      color: var(--accent);
-      transform: translateX(5px);
-    }
-
-    /* --- SWITCH ON/OFF --- */
-    .switch-wrapper {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .switch-label {
-      font-size: 0.55rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      opacity: 0.4;
-      font-weight: 600;
-    }
-
-    .toggle-btn {
-      background: transparent;
-      border: 1px solid var(--border-color);
-      color: var(--text-color);
-      padding: 8px 12px;
-      font-size: 0.65rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: all 0.3s ease;
-      border-radius: 4px;
-    }
-
-    .toggle-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      background-color: var(--accent);
-      border-radius: 50%;
-      box-shadow: 0 0 8px var(--accent);
-    }
-
-    /* --- LIENZO DERECHO --- */
-    .main-content {
-      flex-grow: 1;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
-      perspective: 1000px;
-    }
-
-    .world {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transform: scale(0.98);
-      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      padding: 40px;
-    }
-
-    body:not(.mode-music):not(.mode-bio):not(.mode-contact) #world-av { opacity: 1; pointer-events: auto; transform: scale(1); }
-    body.mode-music:not(.mode-bio):not(.mode-contact) #world-music { opacity: 1; pointer-events: auto; transform: scale(1); }
-
-    body.mode-bio #world-av, body.mode-bio #world-music,
-    body.mode-contact #world-av, body.mode-contact #world-music {
-      opacity: 0 !important;
-      transform: scale(0.92) !important;
-    }
-
-    /* --- SLIDER MAGNÉTICO NATIVO --- */
-    .slider-container {
-      width: 100%;
-      max-width: 1100px;
-      height: 60vh;
-      min-height: 400px;
-      display: flex;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      gap: 30px;
-      padding-bottom: 20px;
-      /* Ocultar barra de scroll pero mantener funcionalidad */
-      scrollbar-width: none; 
-    }
-    .slider-container::-webkit-scrollbar { display: none; }
-
-    .slide {
-      flex: 0 0 100%; /* Cada slide ocupa el 100% del contenedor */
-      scroll-snap-align: center;
-      background-color: var(--sidebar-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-    }
-
-    .slide iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    /* Tarjeta alternativa para IG */
-    .ig-card {
-      text-align: center;
-      color: var(--text-color);
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 15px;
-      width: 100%;
-      height: 100%;
-      background: var(--panel-bg);
-      transition: opacity 0.3s ease;
-    }
-    .ig-card:hover { opacity: 0.8; }
-    .ig-card h3 { font-size: 2rem; }
-    .ig-card p { opacity: 0.6; text-transform: uppercase; letter-spacing: 2px; }
-
-    /* Indicador de scroll */
-    .swipe-hint {
-      position: absolute;
-      bottom: 20px;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      opacity: 0.5;
-      pointer-events: none;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse { 0% { opacity: 0.2; } 50% { opacity: 0.8; } 100% { opacity: 0.2; } }
-
-    /* --- PANELES FLOTANTES (BIO & CONTACT) --- */
-    .text-panel {
-      position: absolute;
-      top: 20px; left: 20px; right: 20px; bottom: 20px;
-      background: var(--panel-bg);
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 10%;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateY(40px);
-      transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 20;
-      overflow-y: auto;
-    }
-
+    /* PANELES DE TEXTO (BIO/CONTACT) */
+    .text-panel { position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; background: var(--panel-bg); border-radius: 8px; display: flex; flex-direction: column; justify-content: center; padding: 10%; opacity: 0; pointer-events: none; transform: translateY(40px); transition: all 0.5s ease; z-index: 20; }
     body.mode-bio #panel-bio { opacity: 1; pointer-events: auto; transform: translateY(0); }
     body.mode-contact #panel-contact { opacity: 1; pointer-events: auto; transform: translateY(0); }
-
+    
     .text-content { max-width: 800px; margin: auto; }
     .text-content h2 { font-size: 3rem; font-weight: 900; margin-bottom: 30px; color: var(--accent); text-transform: lowercase; }
     .text-content p.bio-text { font-size: 1.2rem; line-height: 1.6; opacity: 0.9; text-transform: lowercase; }
-    
     .contact-links { display: flex; flex-direction: column; gap: 15px; margin-bottom: 40px; }
-    .contact-links a { color: var(--text-color); text-decoration: none; font-size: 1.5rem; font-weight: 600; width: fit-content; transition: color 0.3s ease; }
+    .contact-links a { color: var(--text-color); text-decoration: none; font-size: 1.5rem; font-weight: 600; width: fit-content; }
     .contact-links a:hover { color: var(--accent); }
-
     .cv-section { border-top: 1px solid var(--border-color); padding-top: 30px; display: flex; gap: 30px; flex-wrap: wrap; }
-    .cv-section a { color: var(--text-color); text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 900; opacity: 0.6; transition: all 0.3s ease; }
+    .cv-section a { color: var(--text-color); text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 900; opacity: 0.6; }
     .cv-section a:hover { opacity: 1; color: var(--accent); }
 
-    /* --- RESPONSIVE MOBILE --- */
     @media (max-width: 768px) {
       body { flex-direction: column; }
-      
-      .sidebar {
-        width: 100%;
-        height: auto;
-        padding: 15px 20px;
-        flex-direction: row;
-        align-items: center;
-        border-right: none;
-        border-bottom: 1px solid var(--border-color);
-      }
-
-      .nav-links {
-        flex-direction: row;
-        margin-top: 0;
-        gap: 15px;
-      }
-      
+      .sidebar { width: 100%; height: auto; padding: 15px 20px; flex-direction: row; align-items: center; border-right: none; border-bottom: 1px solid var(--border-color); }
+      .nav-links { flex-direction: row; margin-top: 0; gap: 15px; }
       .nav-item { font-size: 1rem; }
-
-      .switch-wrapper {
-        flex-direction: row;
-        align-items: center;
-        gap: 10px;
-      }
-      .switch-label { display: none; /* Ocultamos la etiqueta en móvil para ganar espacio */ }
-      
-      .main-content {
-        padding: 0;
-        height: calc(100vh - 70px);
-      }
-
-      .world { padding: 20px; }
-      
-      .slider-container { height: 100%; min-height: unset; padding-bottom: 0; }
-      
+      .switch-wrapper { flex-direction: row; align-items: center; gap: 10px; }
+      .switch-label { display: none; }
+      .main-content { padding: 0; height: calc(100vh - 70px); }
+      .world { padding: 0; }
+      .player-container { height: 100%; border-radius: 0; border: none; }
       .text-panel { top: 0; left: 0; right: 0; bottom: 0; border-radius: 0; padding: 30px 20px; }
-      .text-content h2 { font-size: 2.2rem; }
-      .text-content p.bio-text { font-size: 1rem; }
-      .cv-section { flex-direction: column; gap: 15px; }
+      .retro-title { font-size: 1rem; }
     }
   </style>
 </head>
@@ -333,16 +108,14 @@
     <div class="brand" id="logo-btn">
       <img src="https://via.placeholder.com/150" alt="Sasha">
     </div>
-    
     <nav class="nav-links">
       <button class="nav-item" id="bio-btn">bio</button>
       <button class="nav-item" id="contact-btn">contact</button>
     </nav>
-
     <div class="switch-wrapper">
       <span class="switch-label">Mode</span>
       <button class="toggle-btn" id="toggleMode">
-        <span id="btn-text">AV</span>
+        <span id="btn-text">Audiovisual</span>
         <div class="status-dot"></div>
       </button>
     </div>
@@ -350,66 +123,41 @@
 
   <main class="main-content">
     
-    <!-- MUNDO AV -->
+    <!-- AUDIOVISUAL QUEUE -->
     <div class="world" id="world-av">
-      <div class="slider-container">
-        <!-- Slide 1: YouTube -->
-        <div class="slide">
-          <iframe src="https://www.youtube.com/embed/-xaM8bPjw6A" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-        <!-- Slide 2: Facebook Video -->
-        <div class="slide">
-          <iframe src="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Fumonski%2Fvideos%2F178749756633337%2F&show_text=false&width=auto" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
-        </div>
-        <!-- Slide 3: Instagram Profile Link -->
-        <div class="slide">
-          <a href="https://www.instagram.com/umpaf2026/" target="_blank" rel="noopener noreferrer" class="ig-card">
-            <h3>@umpaf2026</h3>
-            <p>View Visuals on Instagram ↗</p>
-          </a>
-        </div>
+      <!-- Este onclick abrirá el enlace de la slide activa -->
+      <div class="player-container" onclick="openActiveLink('av')">
+        <div class="progress-ui" id="av-progress"></div>
+        <div id="av-slides"></div>
+        <div class="retro-title" id="av-title"></div>
+        <div class="external-link-icon">↗ VER PROYECTO</div>
       </div>
-      <div class="swipe-hint">Swipe to explore →</div>
     </div>
     
-    <!-- MUNDO MÚSICA -->
+    <!-- MUSIC QUEUE -->
     <div class="world" id="world-music">
-      <div class="slider-container">
-        <!-- Slide 1: Spotify Album 1 -->
-        <div class="slide">
-          <iframe src="https://open.spotify.com/embed/album/2azG6Ac6dywYm2NaNFpZcY?utm_source=generator" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-        <!-- Slide 2: YouTube -->
-        <div class="slide">
-          <iframe src="https://www.youtube.com/embed/YEL_nkwpyaI" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-        <!-- Slide 3: Spotify Album 2 -->
-        <div class="slide">
-          <iframe src="https://open.spotify.com/embed/album/1T2ukpicz6VSkH6WEahNP2?utm_source=generator" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
+      <div class="player-container" onclick="openActiveLink('music')">
+        <div class="progress-ui" id="music-progress"></div>
+        <div id="music-slides"></div>
+        <div class="retro-title" id="music-title"></div>
+        <div class="external-link-icon">↗ ESCUCHAR</div>
       </div>
-      <div class="swipe-hint">Swipe to explore →</div>
     </div>
 
-    <!-- PANEL BIO -->
+    <!-- PANELS -->
     <div class="text-panel" id="panel-bio">
       <div class="text-content">
         <h2>bio.</h2>
         <p class="bio-text">creative professional with hands-on experience in music production, av content, and cultural projects management. with a strong background in sound, video and design, i have actively contributed to studio recordings, live shows, independent film sets, and artist-led initiatives related to music and performance.</p>
       </div>
     </div>
-
-    <!-- PANEL CONTACT -->
     <div class="text-panel" id="panel-contact">
       <div class="text-content">
         <h2>contact.</h2>
-        <div class="contact-links">
-          <a href="mailto:">email</a>
-          <a href="https://wa.me/">whatsapp</a>
-        </div>
+        <div class="contact-links"><a href="mailto:">email</a><a href="https://wa.me/">whatsapp</a></div>
         <div class="cv-section">
-          <a href="https://drive.google.com/file/d/1IABn0l7OJexJzpb0LODkphdX29g29rUP/view?usp=drive_link" target="_blank" rel="noopener noreferrer">artistic cv ↗</a>
-          <a href="https://drive.google.com/file/d/1CuyYZreLYmoce8EN58dwaXWHI0xPkUAP/view?usp=drive_link" target="_blank" rel="noopener noreferrer">producer cv ↗</a>
+          <a href="https://drive.google.com/file/d/1IABn0l7OJexJzpb0LODkphdX29g29rUP/view?usp=drive_link" target="_blank">artistic cv ↗</a>
+          <a href="https://drive.google.com/file/d/1CuyYZreLYmoce8EN58dwaXWHI0xPkUAP/view?usp=drive_link" target="_blank">producer cv ↗</a>
         </div>
       </div>
     </div>
@@ -417,46 +165,138 @@
   </main>
 
   <script>
+    // --- DATOS DE LOS PROYECTOS ---
+    // Cambia los enlaces de imagen ("bg") por GIFs o MP4 tuyos para que haya movimiento.
+    const avData = [
+      { title: "PROYECTO: SAFETY NET", url: "https://www.youtube.com/watch?v=-xaM8bPjw6A", bg: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2000" },
+      { title: "VISUALS: UMONSKI", url: "https://www.facebook.com/umonski/videos/178749756633337/", bg: "https://images.unsplash.com/photo-1601506521937-0121a7fc2a6b?q=80&w=2000" },
+      { title: "ARCHIVE: UMPAF 2026", url: "https://www.instagram.com/umpaf2026/", bg: "https://images.unsplash.com/photo-1536240478700-b869070f9279?q=80&w=2000" }
+    ];
+
+    const musicData = [
+      { title: "ALBUM: TERRACES", url: "https://open.spotify.com/album/2azG6Ac6dywYm2NaNFpZcY", bg: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2000" },
+      { title: "LIVE: SLØTHS", url: "https://www.youtube.com/watch?v=YEL_nkwpyaI", bg: "https://images.unsplash.com/photo-1516280440502-85987c9c049d?q=80&w=2000" },
+      { title: "OST: THE VOID", url: "https://open.spotify.com/intl-es/album/1T2ukpicz6VSkH6WEahNP2", bg: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2000" }
+    ];
+
+    // --- MOTOR DEL CAROUSEL TIPO DELTA CAFÉS ---
+    function initQueue(queueId, data) {
+      const slidesContainer = document.getElementById(`${queueId}-slides`);
+      const progressContainer = document.getElementById(`${queueId}-progress`);
+      
+      data.forEach((item, index) => {
+        // Generar capas de imagen
+        const layer = document.createElement('div');
+        layer.className = 'media-layer';
+        layer.style.backgroundImage = `url(${item.bg})`;
+        layer.dataset.index = index;
+        layer.dataset.url = item.url;
+        layer.dataset.title = item.title;
+        slidesContainer.appendChild(layer);
+
+        // Generar barritas de UI
+        const track = document.createElement('div');
+        track.className = 'progress-track';
+        const fill = document.createElement('div');
+        fill.className = 'progress-fill';
+        track.appendChild(fill);
+        progressContainer.appendChild(track);
+      });
+    }
+
+    initQueue('av', avData);
+    initQueue('music', musicData);
+
+    let currentAvIndex = 0;
+    let currentMusicIndex = 0;
+    let avInterval, musicInterval;
+    const slideDuration = 5000; // 5 segundos por slide
+
+    function playQueue(queueId, data, currentIndexVar) {
+      const layers = document.querySelectorAll(`#${queueId}-slides .media-layer`);
+      const tracks = document.querySelectorAll(`#${queueId}-progress .progress-track`);
+      const titleEl = document.getElementById(`${queueId}-title`);
+      
+      // Limpiar estados
+      layers.forEach(l => l.classList.remove('active', 'viewed'));
+      
+      // Aplicar estado 'viewed' a los anteriores para que la barra se quede llena
+      for(let i = 0; i < window[currentIndexVar]; i++) {
+        layers[i].classList.add('viewed');
+      }
+
+      // Activar actual
+      const activeLayer = layers[window[currentIndexVar]];
+      activeLayer.classList.add('active');
+      titleEl.textContent = activeLayer.dataset.title;
+
+      // Avanzar índice
+      window[currentIndexVar]++;
+      if (window[currentIndexVar] >= data.length) {
+        window[currentIndexVar] = 0; // Loop
+        setTimeout(() => {
+          layers.forEach(l => l.classList.remove('viewed')); // Resetear barras al volver a empezar
+        }, slideDuration);
+      }
+    }
+
+    function startAv() {
+      clearInterval(musicInterval);
+      playQueue('av', avData, 'currentAvIndex');
+      avInterval = setInterval(() => playQueue('av', avData, 'currentAvIndex'), slideDuration);
+    }
+
+    function startMusic() {
+      clearInterval(avInterval);
+      playQueue('music', musicData, 'currentMusicIndex');
+      musicInterval = setInterval(() => playQueue('music', musicData, 'currentMusicIndex'), slideDuration);
+    }
+
+    // --- ENLACES EXTERNOS ---
+    window.openActiveLink = function(queueId) {
+      const activeLayer = document.querySelector(`#${queueId}-slides .media-layer.active`);
+      if(activeLayer && activeLayer.dataset.url) {
+        window.open(activeLayer.dataset.url, '_blank');
+      }
+    };
+
+    // --- LÓGICA DE NAVEGACIÓN ---
     const body = document.body;
     const toggleBtn = document.getElementById('toggleMode');
     const btnText = document.getElementById('btn-text');
-    const bioBtn = document.getElementById('bio-btn');
-    const contactBtn = document.getElementById('contact-btn');
-    const logoBtn = document.getElementById('logo-btn');
     
     function resetPanels() {
       body.classList.remove('mode-bio', 'mode-contact');
-      bioBtn.classList.remove('active');
-      contactBtn.classList.remove('active');
+      document.getElementById('bio-btn').classList.remove('active');
+      document.getElementById('contact-btn').classList.remove('active');
     }
 
-    logoBtn.addEventListener('click', resetPanels);
+    document.getElementById('logo-btn').addEventListener('click', resetPanels);
 
     toggleBtn.addEventListener('click', () => {
       resetPanels();
       body.classList.toggle('mode-music');
-      btnText.textContent = body.classList.contains('mode-music') ? 'Music' : 'AV';
-    });
-
-    bioBtn.addEventListener('click', () => {
-      if (body.classList.contains('mode-bio')) {
-        resetPanels();
+      if(body.classList.contains('mode-music')) {
+        btnText.textContent = 'Música';
+        startMusic();
       } else {
-        resetPanels();
-        body.classList.add('mode-bio');
-        bioBtn.classList.add('active');
+        btnText.textContent = 'Audiovisual';
+        startAv();
       }
     });
 
-    contactBtn.addEventListener('click', () => {
-      if (body.classList.contains('mode-contact')) {
-        resetPanels();
-      } else {
-        resetPanels();
-        body.classList.add('mode-contact');
-        contactBtn.classList.add('active');
-      }
+    document.getElementById('bio-btn').addEventListener('click', () => {
+      if (body.classList.contains('mode-bio')) resetPanels();
+      else { resetPanels(); body.classList.add('mode-bio'); document.getElementById('bio-btn').classList.add('active'); }
     });
+
+    document.getElementById('contact-btn').addEventListener('click', () => {
+      if (body.classList.contains('mode-contact')) resetPanels();
+      else { resetPanels(); body.classList.add('mode-contact'); document.getElementById('contact-btn').classList.add('active'); }
+    });
+
+    // Iniciar con AV por defecto
+    startAv();
   </script>
 
 </body>
