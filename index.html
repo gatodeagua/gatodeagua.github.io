@@ -14,7 +14,7 @@
       --sidebar-bg: #141414;
       --border-color: rgba(255, 255, 255, 0.1);
       --panel-bg: linear-gradient(135deg, #1f0b2e 0%, #0d0d0d 100%);
-      --slide-duration: 5s; /* Tiempo de cada clip */
+      --slide-duration: 6s; /* Un segundo extra para que de tiempo a leer */
     }
 
     body.mode-music {
@@ -28,6 +28,9 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); transition: all 0.5s ease; display: flex; height: 100vh; overflow: hidden; }
+
+    /* EL DETALLE DEL PUNTO */
+    .dot { color: var(--accent); transition: color 0.5s ease; }
 
     /* SIDEBAR */
     .sidebar { width: 180px; background-color: var(--sidebar-bg); padding: 30px 20px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--border-color); z-index: 30; }
@@ -46,31 +49,47 @@
     .status-dot { width: 6px; height: 6px; background-color: var(--accent); border-radius: 50%; box-shadow: 0 0 8px var(--accent); }
 
     /* LIENZO */
-    .main-content { flex-grow: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 40px; }
-    .world { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; padding: 40px; }
+    .main-content { flex-grow: 1; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
     
-    body:not(.mode-music):not(.mode-bio):not(.mode-contact) #world-av { display: flex; }
-    body.mode-music:not(.mode-bio):not(.mode-contact) #world-music { display: flex; }
+    /* SECCIÓN ARTWORKS (El contenedor global) */
+    .artworks-section { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 20px; z-index: 10; transition: opacity 0.5s ease, transform 0.5s ease; }
+    
+    .section-header h2 { font-size: 2.5rem; font-weight: 900; text-transform: capitalize; letter-spacing: -1px; margin-left: 5px; }
 
-    /* ESTILO DELTA CAFÉS (AUTO-PLAYER) */
-    .player-container { width: 100%; max-width: 1200px; aspect-ratio: 16 / 9; background-color: #000; border: 1px solid var(--border-color); position: relative; overflow: hidden; border-radius: 4px; cursor: pointer; }
-    .player-container:hover .external-link-icon { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+    /* Ocultar la sección Artworks cuando Bio o Contact están abiertos */
+    body.mode-bio .artworks-section, body.mode-contact .artworks-section { opacity: 0; pointer-events: none; transform: scale(0.95); }
+
+    .world-container { position: relative; width: 100%; aspect-ratio: 16 / 9; }
+    .world { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; }
+    
+    body:not(.mode-music) #world-av { display: block; }
+    body.mode-music #world-music { display: block; }
+
+    /* REPRODUCTOR */
+    .player-container { width: 100%; height: 100%; background-color: #000; border: 1px solid var(--border-color); position: relative; overflow: hidden; border-radius: 4px; }
     
     .media-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0; transition: opacity 0.8s ease; }
-    .media-layer.active { opacity: 0.6; }
+    .media-layer.active { opacity: 1; } /* 100% visibilidad de base */
+
+    /* UI: OVERLAY DE HOVER/TAP */
+    .hover-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; opacity: 0; transition: opacity 0.3s ease; z-index: 15; }
+    
+    /* Al hacer hover (o tap), oscurecemos y mostramos texto */
+    .player-container:hover .hover-overlay { opacity: 1; }
+    
+    .project-title { font-family: 'Courier New', Courier, monospace; font-size: 1.5rem; font-weight: bold; color: #fff; text-transform: uppercase; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+    .project-role { font-size: 1rem; color: #ccc; font-weight: 400; margin-bottom: 20px; }
+    
+    .external-link-btn { align-self: flex-start; background: transparent; border: 1px solid #fff; color: #fff; padding: 10px 20px; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: all 0.3s ease; border-radius: 4px; pointer-events: auto; }
+    .external-link-btn:hover { background: var(--accent); border-color: var(--accent); }
 
     /* UI: Barras de progreso */
-    .progress-ui { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; gap: 10px; z-index: 10; }
-    .progress-track { flex: 1; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; overflow: hidden; }
-    .progress-fill { height: 100%; width: 0; background: var(--text-color); }
+    .progress-ui { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; gap: 10px; z-index: 20; pointer-events: none; }
+    .progress-track { flex: 1; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0; background: #fff; } /* Blanco puro para que se vea siempre */
     .media-layer.active .progress-fill { animation: fillBar var(--slide-duration) linear forwards; }
     .media-layer.viewed .progress-fill { width: 100%; animation: none; }
     @keyframes fillBar { from { width: 0; } to { width: 100%; } }
-
-    /* UI: Título Retro */
-    .retro-title { position: absolute; bottom: 20px; left: 20px; font-family: 'Courier New', Courier, monospace; font-size: 1.2rem; font-weight: bold; color: var(--text-color); z-index: 10; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
-    
-    .external-link-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; color: #fff; opacity: 0; transition: all 0.3s ease; text-shadow: 0 0 10px rgba(0,0,0,0.5); z-index: 10; }
 
     /* PANELES DE TEXTO (BIO/CONTACT) */
     .text-panel { position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; background: var(--panel-bg); border-radius: 8px; display: flex; flex-direction: column; justify-content: center; padding: 10%; opacity: 0; pointer-events: none; transform: translateY(40px); transition: all 0.5s ease; z-index: 20; }
@@ -78,13 +97,15 @@
     body.mode-contact #panel-contact { opacity: 1; pointer-events: auto; transform: translateY(0); }
     
     .text-content { max-width: 800px; margin: auto; }
-    .text-content h2 { font-size: 3rem; font-weight: 900; margin-bottom: 30px; color: var(--accent); text-transform: lowercase; }
+    .text-content h2 { font-size: 3rem; font-weight: 900; margin-bottom: 30px; text-transform: lowercase; }
     .text-content p.bio-text { font-size: 1.2rem; line-height: 1.6; opacity: 0.9; text-transform: lowercase; }
+    
     .contact-links { display: flex; flex-direction: column; gap: 15px; margin-bottom: 40px; }
-    .contact-links a { color: var(--text-color); text-decoration: none; font-size: 1.5rem; font-weight: 600; width: fit-content; }
+    .contact-links a { color: var(--text-color); text-decoration: none; font-size: 1.5rem; font-weight: 600; width: fit-content; transition: color 0.3s ease; }
     .contact-links a:hover { color: var(--accent); }
+    
     .cv-section { border-top: 1px solid var(--border-color); padding-top: 30px; display: flex; gap: 30px; flex-wrap: wrap; }
-    .cv-section a { color: var(--text-color); text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 900; opacity: 0.6; }
+    .cv-section a { color: var(--text-color); text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 900; opacity: 0.6; transition: all 0.3s ease; }
     .cv-section a:hover { opacity: 1; color: var(--accent); }
 
     @media (max-width: 768px) {
@@ -94,11 +115,16 @@
       .nav-item { font-size: 1rem; }
       .switch-wrapper { flex-direction: row; align-items: center; gap: 10px; }
       .switch-label { display: none; }
-      .main-content { padding: 0; height: calc(100vh - 70px); }
-      .world { padding: 0; }
-      .player-container { height: 100%; border-radius: 0; border: none; }
+      .main-content { padding: 20px; height: calc(100vh - 70px); justify-content: flex-start; }
+      .section-header h2 { font-size: 1.8rem; }
+      .artworks-section { height: 100%; }
+      .world-container { height: 100%; aspect-ratio: auto; }
+      .hover-overlay { padding: 20px; justify-content: center; }
+      .project-title { font-size: 1.1rem; }
+      .project-role { font-size: 0.85rem; }
       .text-panel { top: 0; left: 0; right: 0; bottom: 0; border-radius: 0; padding: 30px 20px; }
-      .retro-title { font-size: 1rem; }
+      .text-content h2 { font-size: 2.2rem; }
+      .text-content p.bio-text { font-size: 1rem; }
     }
   </style>
 </head>
@@ -108,10 +134,13 @@
     <div class="brand" id="logo-btn">
       <img src="https://via.placeholder.com/150" alt="Sasha">
     </div>
+    
     <nav class="nav-links">
       <button class="nav-item" id="bio-btn">bio</button>
+      <button class="nav-item active" id="artworks-btn">artworks</button>
       <button class="nav-item" id="contact-btn">contact</button>
     </nav>
+    
     <div class="switch-wrapper">
       <span class="switch-label">Mode</span>
       <button class="toggle-btn" id="toggleMode">
@@ -123,38 +152,58 @@
 
   <main class="main-content">
     
-    <!-- AUDIOVISUAL QUEUE -->
-    <div class="world" id="world-av">
-      <!-- Este onclick abrirá el enlace de la slide activa -->
-      <div class="player-container" onclick="openActiveLink('av')">
-        <div class="progress-ui" id="av-progress"></div>
-        <div id="av-slides"></div>
-        <div class="retro-title" id="av-title"></div>
-        <div class="external-link-icon">↗ VER PROYECTO</div>
+    <!-- SECCIÓN ARTWORKS (Principal) -->
+    <div class="artworks-section">
+      <div class="section-header">
+        <h2>Artworks<span class="dot">.</span></h2>
       </div>
-    </div>
-    
-    <!-- MUSIC QUEUE -->
-    <div class="world" id="world-music">
-      <div class="player-container" onclick="openActiveLink('music')">
-        <div class="progress-ui" id="music-progress"></div>
-        <div id="music-slides"></div>
-        <div class="retro-title" id="music-title"></div>
-        <div class="external-link-icon">↗ ESCUCHAR</div>
+
+      <div class="world-container">
+        <!-- AUDIOVISUAL QUEUE -->
+        <div class="world" id="world-av">
+          <div class="player-container">
+            <div class="progress-ui" id="av-progress"></div>
+            <div id="av-slides"></div>
+            
+            <div class="hover-overlay">
+              <div class="project-title" id="av-title"></div>
+              <div class="project-role" id="av-role"></div>
+              <button class="external-link-btn" onclick="openActiveLink('av')">Ver Proyecto ↗</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- MUSIC QUEUE -->
+        <div class="world" id="world-music">
+          <div class="player-container">
+            <div class="progress-ui" id="music-progress"></div>
+            <div id="music-slides"></div>
+            
+            <div class="hover-overlay">
+              <div class="project-title" id="music-title"></div>
+              <div class="project-role" id="music-role"></div>
+              <button class="external-link-btn" onclick="openActiveLink('music')">Escuchar ↗</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- PANELS -->
+    <!-- PANELES -->
     <div class="text-panel" id="panel-bio">
       <div class="text-content">
-        <h2>bio.</h2>
+        <h2>bio<span class="dot">.</span></h2>
         <p class="bio-text">creative professional with hands-on experience in music production, av content, and cultural projects management. with a strong background in sound, video and design, i have actively contributed to studio recordings, live shows, independent film sets, and artist-led initiatives related to music and performance.</p>
       </div>
     </div>
+    
     <div class="text-panel" id="panel-contact">
       <div class="text-content">
-        <h2>contact.</h2>
-        <div class="contact-links"><a href="mailto:">email</a><a href="https://wa.me/">whatsapp</a></div>
+        <h2>contact<span class="dot">.</span></h2>
+        <div class="contact-links">
+          <a href="mailto:">email</a>
+          <a href="https://wa.me/">whatsapp</a>
+        </div>
         <div class="cv-section">
           <a href="https://drive.google.com/file/d/1IABn0l7OJexJzpb0LODkphdX29g29rUP/view?usp=drive_link" target="_blank">artistic cv ↗</a>
           <a href="https://drive.google.com/file/d/1CuyYZreLYmoce8EN58dwaXWHI0xPkUAP/view?usp=drive_link" target="_blank">producer cv ↗</a>
@@ -165,36 +214,39 @@
   </main>
 
   <script>
-    // --- DATOS DE LOS PROYECTOS ---
-    // Cambia los enlaces de imagen ("bg") por GIFs o MP4 tuyos para que haya movimiento.
-    const avData = [
-      { title: "PROYECTO: SAFETY NET", url: "https://www.youtube.com/watch?v=-xaM8bPjw6A", bg: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2000" },
-      { title: "VISUALS: UMONSKI", url: "https://www.facebook.com/umonski/videos/178749756633337/", bg: "https://images.unsplash.com/photo-1601506521937-0121a7fc2a6b?q=80&w=2000" },
-      { title: "ARCHIVE: UMPAF 2026", url: "https://www.instagram.com/umpaf2026/", bg: "https://images.unsplash.com/photo-1536240478700-b869070f9279?q=80&w=2000" }
-    ];
-
+    // --- DATOS REALES DE SASHA ---
     const musicData = [
-      { title: "ALBUM: TERRACES", url: "https://open.spotify.com/album/2azG6Ac6dywYm2NaNFpZcY", bg: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2000" },
-      { title: "LIVE: SLØTHS", url: "https://www.youtube.com/watch?v=YEL_nkwpyaI", bg: "https://images.unsplash.com/photo-1516280440502-85987c9c049d?q=80&w=2000" },
-      { title: "OST: THE VOID", url: "https://open.spotify.com/intl-es/album/1T2ukpicz6VSkH6WEahNP2", bg: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2000" }
+      { title: "SLØTHS “TERRACES” LP (2026)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/2azG6Ac6dywYm2NaNFpZcY?si=H_bRWXHcTN2e-vBcrsIJRw", bg: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2000" },
+      { title: "SLØTHS “FOR YOUR LOVIN’ LIVE AT 7BARBAS” (2026)", role: "Live Musician.", url: "https://www.youtube.com/watch?v=YEL_nkwpyaI", bg: "https://images.unsplash.com/photo-1516280440502-85987c9c049d?q=80&w=2000" },
+      { title: "APRIL GALLO “RENT MY HEART FOR FREE” (2025)", role: "Sound Assistant, Mix & Master Assistant w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/album/67ptfnCU7QLBVTFWYcRoqP?si=VP02yy3eT0WSXhxSh6iZGQ", bg: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2000" },
+      { title: "ANANDA MELÉ “EGO” (2024)", role: "Sound Assistant, Mix & Master Assistant w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/track/6M7fFgBd24Oh93eDmS1PQv", bg: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2000" },
+      { title: "RICCI NOSTRA “TUISHO” (2023)", role: "Sound Assistant, Mix & Master Assistant, Arranger, w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/album/6QHmVOiMV4j6f0fURK7WVK", bg: "https://images.unsplash.com/photo-1519638399535-1b036603ac77?q=80&w=2000" },
+      { title: "RETORNO VENOSO “LIMFA” (2022)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/1T2ukpicz6VSkH6WEahNP2?si=-J9TiE25Tx2xdsZUYKLbeg", bg: "https://images.unsplash.com/photo-1493225457124-a1a2a5f59bd6?q=80&w=2000" }
     ];
 
-    // --- MOTOR DEL CAROUSEL TIPO DELTA CAFÉS ---
+    const avData = [
+      { title: "SLØTHS “FOR YOUR LOVIN’” VIDEOCLIP (2026)", role: "Director, Actor, Editor & Screenwriter, w/ Nicolás J. Bascompte.", url: "https://www.youtube.com/watch?v=AslbE_4RdU8", bg: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2000" },
+      { title: "USTICA MEDITERRANEAN PERFORMING ARTS FESTIVAL (2026)", role: "Sound Tech, Photography & Production.", url: "https://www.prolocoustica.com/es/umpaf", bg: "https://images.unsplash.com/photo-1601506521937-0121a7fc2a6b?q=80&w=2000" },
+      { title: "BASS BARCELONA ART SUMMER SCHOOL (2025 & 2026)", role: "Production Assistant.", url: "https://www.instagram.com/bass_bcn/?hl=es", bg: "https://images.unsplash.com/photo-1536240478700-b869070f9279?q=80&w=2000" },
+      { title: "PLATES & RECORDS (2021-2022)", role: "Director, Creative Producer, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=T6qLbXSih-Q", bg: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=2000" },
+      { title: "AUTOPSIA DE UN RELATO PERIODÍSTICO (2020)", role: "Director, Creative AI Technologist, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=-xaM8bPjw6A", bg: "https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?q=80&w=2000" }
+    ];
+
+    // --- MOTOR DEL CAROUSEL ---
     function initQueue(queueId, data) {
       const slidesContainer = document.getElementById(`${queueId}-slides`);
       const progressContainer = document.getElementById(`${queueId}-progress`);
       
       data.forEach((item, index) => {
-        // Generar capas de imagen
         const layer = document.createElement('div');
         layer.className = 'media-layer';
         layer.style.backgroundImage = `url(${item.bg})`;
         layer.dataset.index = index;
         layer.dataset.url = item.url;
         layer.dataset.title = item.title;
+        layer.dataset.role = item.role;
         slidesContainer.appendChild(layer);
 
-        // Generar barritas de UI
         const track = document.createElement('div');
         track.className = 'progress-track';
         const fill = document.createElement('div');
@@ -210,33 +262,30 @@
     let currentAvIndex = 0;
     let currentMusicIndex = 0;
     let avInterval, musicInterval;
-    const slideDuration = 5000; // 5 segundos por slide
+    const slideDuration = 6000;
 
     function playQueue(queueId, data, currentIndexVar) {
       const layers = document.querySelectorAll(`#${queueId}-slides .media-layer`);
-      const tracks = document.querySelectorAll(`#${queueId}-progress .progress-track`);
       const titleEl = document.getElementById(`${queueId}-title`);
+      const roleEl = document.getElementById(`${queueId}-role`);
       
-      // Limpiar estados
       layers.forEach(l => l.classList.remove('active', 'viewed'));
       
-      // Aplicar estado 'viewed' a los anteriores para que la barra se quede llena
       for(let i = 0; i < window[currentIndexVar]; i++) {
         layers[i].classList.add('viewed');
       }
 
-      // Activar actual
       const activeLayer = layers[window[currentIndexVar]];
       activeLayer.classList.add('active');
+      
+      // Actualizar los textos del overlay
       titleEl.textContent = activeLayer.dataset.title;
+      roleEl.textContent = activeLayer.dataset.role;
 
-      // Avanzar índice
       window[currentIndexVar]++;
       if (window[currentIndexVar] >= data.length) {
-        window[currentIndexVar] = 0; // Loop
-        setTimeout(() => {
-          layers.forEach(l => l.classList.remove('viewed')); // Resetear barras al volver a empezar
-        }, slideDuration);
+        window[currentIndexVar] = 0; 
+        setTimeout(() => { layers.forEach(l => l.classList.remove('viewed')); }, slideDuration);
       }
     }
 
@@ -252,7 +301,7 @@
       musicInterval = setInterval(() => playQueue('music', musicData, 'currentMusicIndex'), slideDuration);
     }
 
-    // --- ENLACES EXTERNOS ---
+    // Enlaces Externos
     window.openActiveLink = function(queueId) {
       const activeLayer = document.querySelector(`#${queueId}-slides .media-layer.active`);
       if(activeLayer && activeLayer.dataset.url) {
@@ -265,10 +314,15 @@
     const toggleBtn = document.getElementById('toggleMode');
     const btnText = document.getElementById('btn-text');
     
+    const bioBtn = document.getElementById('bio-btn');
+    const artworksBtn = document.getElementById('artworks-btn');
+    const contactBtn = document.getElementById('contact-btn');
+    
     function resetPanels() {
       body.classList.remove('mode-bio', 'mode-contact');
-      document.getElementById('bio-btn').classList.remove('active');
-      document.getElementById('contact-btn').classList.remove('active');
+      bioBtn.classList.remove('active');
+      contactBtn.classList.remove('active');
+      artworksBtn.classList.add('active');
     }
 
     document.getElementById('logo-btn').addEventListener('click', resetPanels);
@@ -285,17 +339,22 @@
       }
     });
 
-    document.getElementById('bio-btn').addEventListener('click', () => {
-      if (body.classList.contains('mode-bio')) resetPanels();
-      else { resetPanels(); body.classList.add('mode-bio'); document.getElementById('bio-btn').classList.add('active'); }
+    bioBtn.addEventListener('click', () => {
+      resetPanels();
+      artworksBtn.classList.remove('active');
+      body.classList.add('mode-bio');
+      bioBtn.classList.add('active');
+    });
+    
+    artworksBtn.addEventListener('click', resetPanels);
+
+    contactBtn.addEventListener('click', () => {
+      resetPanels();
+      artworksBtn.classList.remove('active');
+      body.classList.add('mode-contact');
+      contactBtn.classList.add('active');
     });
 
-    document.getElementById('contact-btn').addEventListener('click', () => {
-      if (body.classList.contains('mode-contact')) resetPanels();
-      else { resetPanels(); body.classList.add('mode-contact'); document.getElementById('contact-btn').classList.add('active'); }
-    });
-
-    // Iniciar con AV por defecto
     startAv();
   </script>
 
