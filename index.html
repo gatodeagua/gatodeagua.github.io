@@ -49,42 +49,46 @@
     .status-dot { width: 8px; height: 8px; background-color: var(--bg-color); border-radius: 50%; }
     .toggle-btn:hover .status-dot { background-color: #fff; }
 
-    /* LIENZO */
+    /* LIENZO PRINCIPAL */
     .main-content { flex-grow: 1; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
-    .artworks-section { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 20px; z-index: 10; transition: opacity 0.5s ease, transform 0.5s ease; }
+    .artworks-section { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 20px; z-index: 10; transition: opacity 0.5s ease, transform 0.5s ease; height: 100%; max-height: 800px; }
     .section-header h2 { font-size: 2.5rem; font-weight: 900; text-transform: capitalize; letter-spacing: -1px; margin-left: 5px; }
 
     body.mode-bio .artworks-section, body.mode-contact .artworks-section { opacity: 0; pointer-events: none; transform: scale(0.95); }
 
-    .world-container { position: relative; width: 100%; aspect-ratio: 16 / 9; }
+    .world-container { position: relative; width: 100%; height: 100%; }
     .world { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; }
     body:not(.mode-music) #world-av { display: block; }
     body.mode-music #world-music { display: block; }
 
-    /* REPRODUCTOR */
-    .player-container { width: 100%; height: 100%; background-color: #000; border: 1px solid var(--border-color); position: relative; overflow: hidden; border-radius: 4px; cursor: pointer; }
-    
+    /* MOTOR AV: AUTO-PLAYER DELTA CAFÉS */
+    .player-container { width: 100%; height: 100%; background-color: #111; border: 1px solid var(--border-color); position: relative; overflow: hidden; border-radius: 4px; cursor: pointer; aspect-ratio: 16/9; }
     .media-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0; transition: opacity 0.8s ease; }
     .media-layer.active { opacity: 1; }
-    .media-layer video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-
-    /* UI: OVERLAY DE HOVER/TAP */
+    
     .hover-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; opacity: 0; transition: opacity 0.3s ease; z-index: 15; pointer-events: none; }
     .player-container:hover .hover-overlay { opacity: 1; }
     
     .project-title { font-family: 'Courier New', Courier, monospace; font-size: 1.5rem; font-weight: bold; color: #fff; text-transform: uppercase; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
     .project-role { font-size: 1rem; color: #ccc; font-weight: 400; margin-bottom: 20px; }
-    
     .external-link-badge { align-self: flex-start; background: transparent; border: 1px solid #fff; color: #fff; padding: 10px 20px; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; border-radius: 4px; }
     .player-container:hover .external-link-badge { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-    /* UI: Barras de progreso */
     .progress-ui { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; gap: 10px; z-index: 20; pointer-events: none; }
     .progress-track { flex: 1; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; }
     .progress-fill { height: 100%; width: 0; background: #fff; }
     .media-layer.active .progress-fill { animation: fillBar var(--slide-duration) linear forwards; }
     .media-layer.viewed .progress-fill { width: 100%; animation: none; }
     @keyframes fillBar { from { width: 0; } to { width: 100%; } }
+
+    /* MOTOR MÚSICA: SCROLL SNAP MAGNÉTICO */
+    .slider-container { width: 100%; height: 100%; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 30px; padding-bottom: 10px; scrollbar-width: none; aspect-ratio: 16/9; }
+    .slider-container::-webkit-scrollbar { display: none; }
+    .slide { flex: 0 0 100%; scroll-snap-align: center; background-color: #050505; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; position: relative; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
+    .slide iframe, .slide video { width: 100%; height: 100%; border: none; object-fit: cover; }
+    
+    .slide-badge { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%); padding: 40px 20px 20px 20px; color: #fff; font-family: 'Courier New', monospace; font-size: 1rem; font-weight: bold; text-transform: uppercase; pointer-events: none; text-shadow: 0 2px 10px rgba(0,0,0,1); }
+    .slide-badge span { display: block; font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 400; color: #aaa; margin-top: 5px; }
 
     /* PANELES DE TEXTO */
     .text-panel { position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; background: var(--panel-bg); border-radius: 8px; display: flex; flex-direction: column; justify-content: center; padding: 10%; opacity: 0; pointer-events: none; transform: translateY(40px); transition: all 0.5s ease; z-index: 20; }
@@ -112,8 +116,9 @@
       .switch-label { display: none; }
       .main-content { padding: 20px; height: calc(100vh - 70px); justify-content: flex-start; }
       .section-header h2 { font-size: 1.8rem; }
-      .artworks-section { height: 100%; }
+      .artworks-section { height: 100%; max-height: none; }
       .world-container { height: 100%; aspect-ratio: auto; }
+      .player-container, .slider-container { aspect-ratio: auto; }
       .hover-overlay { padding: 20px; justify-content: center; }
       .project-title { font-size: 1.1rem; }
       .project-role { font-size: 0.85rem; }
@@ -154,7 +159,8 @@
       </div>
 
       <div class="world-container">
-        <!-- AV -->
+        
+        <!-- AUDIOVISUAL: Auto-Player (Rutas Locales Relativas) -->
         <div class="world" id="world-av">
           <div class="player-container" onclick="openActiveLink('av')">
             <div class="progress-ui" id="av-progress"></div>
@@ -168,23 +174,47 @@
           </div>
         </div>
         
-        <!-- MUSIC -->
+        <!-- MÚSICA: Slider Manual con IFrames y Video Local -->
         <div class="world" id="world-music">
-          <div class="player-container" onclick="openActiveLink('music')">
-            <div class="progress-ui" id="music-progress"></div>
-            <div id="music-slides"></div>
+          <div class="slider-container">
             
-            <div class="hover-overlay">
-              <div class="project-title" id="music-title"></div>
-              <div class="project-role" id="music-role"></div>
-              <div class="external-link-badge">Escuchar ↗</div>
+            <div class="slide">
+              <iframe src="https://open.spotify.com/embed/album/2azG6Ac6dywYm2NaNFpZcY?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+              <div class="slide-badge">SLØTHS “TERRACES” LP <span>Live Musician, Composer, Prod. & Sound Design.</span></div>
             </div>
+            
+            <div class="slide">
+              <video src="./music/fondo-sloths-v2.mp4" autoplay loop muted playsinline></video>
+              <div class="slide-badge">SLØTHS “LIVE AT 7BARBAS” <span>Live Musician.</span></div>
+            </div>
+            
+            <div class="slide">
+              <iframe src="https://open.spotify.com/embed/album/67ptfnCU7QLBVTFWYcRoqP?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+              <div class="slide-badge">APRIL GALLO “RENT MY HEART FOR FREE” <span>Sound Assistant, Mix & Master Assistant.</span></div>
+            </div>
+
+            <div class="slide">
+              <iframe src="https://open.spotify.com/embed/track/6M7fFgBd24Oh93eDmS1PQv?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+              <div class="slide-badge">ANANDA MELÉ “EGO” <span>Sound Assistant, Mix & Master Assistant.</span></div>
+            </div>
+
+            <div class="slide">
+              <iframe src="https://open.spotify.com/embed/album/6QHmVOiMV4j6f0fURK7WVK?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+              <div class="slide-badge">RICCI NOSTRA “TUISHO” <span>Sound Assistant, Mix & Master Assistant, Arranger.</span></div>
+            </div>
+
+            <div class="slide">
+              <iframe src="https://open.spotify.com/embed/album/1T2ukpicz6VSkH6WEahNP2?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+              <div class="slide-badge">RETORNO VENOSO “LIMFA” <span>Live Musician, Composer, Prod. & Sound Design.</span></div>
+            </div>
+
           </div>
         </div>
+
       </div>
     </div>
 
-    <!-- PANELS -->
+    <!-- PANELES DE TEXTO -->
     <div class="text-panel" id="panel-bio">
       <div class="text-content">
         <h2>bio<span class="dot">.</span></h2>
@@ -209,43 +239,24 @@
   </main>
 
   <script>
-    const musicData = [
-      { title: "SLØTHS “TERRACES” LP (2026)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/2azG6Ac6dywYm2NaNFpZcY?si=H_bRWXHcTN2e-vBcrsIJRw", bg: "music/terraces.jpg" },
-      { title: "SLØTHS “FOR YOUR LOVIN’ LIVE AT 7BARBAS” (2026)", role: "Live Musician.", url: "https://www.youtube.com/watch?v=YEL_nkwpyaI", bg: "music/fondo-sloths-v2.mp4" },
-      { title: "APRIL GALLO “RENT MY HEART FOR FREE” (2025)", role: "Sound Assistant, Mix & Master Assistant w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/album/67ptfnCU7QLBVTFWYcRoqP?si=VP02yy3eT0WSXhxSh6iZGQ", bg: "music/april-gallo.jpeg" },
-      { title: "ANANDA MELÉ “EGO” (2024)", role: "Sound Assistant, Mix & Master Assistant w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/track/6M7fFgBd24Oh93eDmS1PQv", bg: "music/ananda-mele.jpg" },
-      { title: "RICCI NOSTRA “TUISHO” (2023)", role: "Sound Assistant, Mix & Master Assistant, Arranger, w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/album/6QHmVOiMV4j6f0fURK7WVK", bg: "music/ricci-nostra.jpg" },
-      { title: "RETORNO VENOSO “LIMFA” (2022)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/1T2ukpicz6VSkH6WEahNP2?si=-J9TiE25Tx2xdsZUYKLbeg", bg: "music/limfa.jpeg" }
-    ];
-
+    // RUTAS RELATIVAS ESTRICTAS PARA AV
     const avData = [
-      { title: "SLØTHS “FOR YOUR LOVIN’” VIDEOCLIP (2026)", role: "Director, Actor, Editor & Screenwriter, w/ Nicolás J. Bascompte.", url: "https://www.youtube.com/watch?v=AslbE_4RdU8", bg: "audiovisual/lovin.jpg" },
-      { title: "USTICA MEDITERRANEAN PERFORMING ARTS FESTIVAL (2026)", role: "Sound Tech, Photography & Production.", url: "https://www.prolocoustica.com/es/umpaf", bg: "audiovisual/umpaf-26.jpg" },
-      { title: "BASS BARCELONA ART SUMMER SCHOOL (2025 & 2026)", role: "Production Assistant.", url: "https://www.instagram.com/bass_bcn/?hl=es", bg: "audiovisual/bass-26.jpg" },
-      { title: "PLATES & RECORDS (2021-2022)", role: "Director, Creative Producer, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=T6qLbXSih-Q", bg: "audiovisual/plates-records.jpg" },
-      { title: "AUTOPSIA DE UN RELATO PERIODÍSTICO (2020)", role: "Director, Creative AI Technologist, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=-xaM8bPjw6A", bg: "audiovisual/autopsia.jpg" }
+      { title: "SLØTHS “FOR YOUR LOVIN’” VIDEOCLIP (2026)", role: "Director, Actor, Editor & Screenwriter", url: "https://www.youtube.com/watch?v=AslbE_4RdU8", bg: "./audiovisual/lovin.jpg" },
+      { title: "USTICA MEDITERRANEAN PERFORMING ARTS FESTIVAL (2026)", role: "Sound Tech, Photography & Production.", url: "https://www.prolocoustica.com/es/umpaf", bg: "./audiovisual/umpaf-26.jpg" },
+      { title: "BASS BARCELONA ART SUMMER SCHOOL (2025 & 2026)", role: "Production Assistant.", url: "https://www.instagram.com/bass_bcn/?hl=es", bg: "./audiovisual/UMPAF-26-vertical.jpg" }, 
+      { title: "PLATES & RECORDS (2021-2022)", role: "Director, Creative Producer, AV Designer", url: "https://www.youtube.com/watch?v=T6qLbXSih-Q", bg: "./audiovisual/plates-records.jpg" },
+      { title: "AUTOPSIA DE UN RELATO PERIODÍSTICO (2020)", role: "Director, Creative AI Technologist, AV Designer", url: "https://www.youtube.com/watch?v=-xaM8bPjw6A", bg: "./audiovisual/autopsia.jpg" }
     ];
 
-    function initQueue(queueId, data) {
-      const slidesContainer = document.getElementById(`${queueId}-slides`);
-      const progressContainer = document.getElementById(`${queueId}-progress`);
+    function initAvQueue() {
+      const slidesContainer = document.getElementById('av-slides');
+      const progressContainer = document.getElementById('av-progress');
       
-      data.forEach((item, index) => {
+      avData.forEach((item, index) => {
         const layer = document.createElement('div');
         layer.className = 'media-layer';
-        layer.style.backgroundColor = "#111";
-        
-        if (item.bg.toLowerCase().endsWith('.mp4')) {
-          const video = document.createElement('video');
-          video.src = item.bg;
-          video.autoplay = true;
-          video.loop = true;
-          video.muted = true;
-          video.playsInline = true;
-          layer.appendChild(video);
-        } else {
-          layer.style.backgroundImage = "url('" + item.bg + "')";
-        }
+        layer.style.backgroundColor = "#111"; 
+        layer.style.backgroundImage = "url('" + item.bg + "')";
         
         layer.dataset.index = index;
         layer.dataset.url = item.url;
@@ -262,57 +273,56 @@
       });
     }
 
-    initQueue('av', avData);
-    initQueue('music', musicData);
+    initAvQueue();
 
-    // Estado local para los índices
-    const queueState = { av: 0, music: 0 };
-    let avInterval, musicInterval;
+    let currentAvIndex = 0;
+    let avInterval;
     const slideDuration = 6000;
 
-    function playQueue(queueId, data) {
-      const layers = document.querySelectorAll(`#${queueId}-slides .media-layer`);
-      const titleEl = document.getElementById(`${queueId}-title`);
-      const roleEl = document.getElementById(`${queueId}-role`);
+    function playAvQueue() {
+      const layers = document.querySelectorAll('#av-slides .media-layer');
+      const titleEl = document.getElementById('av-title');
+      const roleEl = document.getElementById('av-role');
       
       layers.forEach(l => l.classList.remove('active', 'viewed'));
       
-      for(let i = 0; i < queueState[queueId]; i++) {
+      for(let i = 0; i < currentAvIndex; i++) {
         layers[i].classList.add('viewed');
       }
 
-      const activeLayer = layers[queueState[queueId]];
-      activeLayer.classList.add('active');
-      
-      titleEl.textContent = activeLayer.dataset.title;
-      roleEl.textContent = activeLayer.dataset.role;
+      const activeLayer = layers[currentAvIndex];
+      if(activeLayer) {
+        activeLayer.classList.add('active');
+        titleEl.textContent = activeLayer.dataset.title;
+        roleEl.textContent = activeLayer.dataset.role;
+      }
 
-      queueState[queueId]++;
-      if (queueState[queueId] >= data.length) {
-        queueState[queueId] = 0; 
+      currentAvIndex++;
+      if (currentAvIndex >= avData.length) {
+        currentAvIndex = 0; 
         setTimeout(() => { layers.forEach(l => l.classList.remove('viewed')); }, slideDuration);
       }
     }
 
     function startAv() {
-      clearInterval(musicInterval);
-      playQueue('av', avData);
-      avInterval = setInterval(() => playQueue('av', avData), slideDuration);
+      playAvQueue();
+      avInterval = setInterval(playAvQueue, slideDuration);
     }
 
-    function startMusic() {
+    function stopAv() {
       clearInterval(avInterval);
-      playQueue('music', musicData);
-      musicInterval = setInterval(() => playQueue('music', musicData), slideDuration);
     }
 
     window.openActiveLink = function(queueId) {
-      const activeLayer = document.querySelector(`#${queueId}-slides .media-layer.active`);
-      if(activeLayer && activeLayer.dataset.url) {
-        window.open(activeLayer.dataset.url, '_blank');
+      if(queueId === 'av') {
+        const activeLayer = document.querySelector('#av-slides .media-layer.active');
+        if(activeLayer && activeLayer.dataset.url) {
+          window.open(activeLayer.dataset.url, '_blank');
+        }
       }
     };
 
+    // NAVEGACIÓN Y CAMBIO DE MUNDOS
     const body = document.body;
     const toggleBtn = document.getElementById('toggleMode');
     const btnText = document.getElementById('btn-text');
@@ -335,7 +345,7 @@
       body.classList.toggle('mode-music');
       if(body.classList.contains('mode-music')) {
         btnText.textContent = 'música';
-        startMusic();
+        stopAv(); // Paramos el motor AV para no chupar recursos en la sombra
       } else {
         btnText.textContent = 'audiovisual';
         startAv();
@@ -358,6 +368,7 @@
       contactBtn.classList.add('active');
     });
 
+    // Iniciar
     startAv();
   </script>
 
