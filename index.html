@@ -52,7 +52,7 @@
     /* LIENZO PRINCIPAL */
     .main-content { flex-grow: 1; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
     .artworks-section { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 20px; z-index: 10; transition: opacity 0.5s ease, transform 0.5s ease; height: 100%; max-height: 800px; }
-    .section-header h2 { font-size: 2.5rem; font-weight: 900; text-transform: capitalize; letter-spacing: -1px; margin-left: 5px; }
+    .section-header h2 { font-size: 2.5rem; font-weight: 900; text-transform: lowercase; letter-spacing: -1px; margin-left: 5px; }
 
     body.mode-bio .artworks-section, body.mode-contact .artworks-section { opacity: 0; pointer-events: none; transform: scale(0.95); }
 
@@ -69,7 +69,8 @@
     .hover-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; opacity: 0; transition: opacity 0.3s ease; z-index: 15; pointer-events: none; }
     .player-container:hover .hover-overlay { opacity: 1; }
     
-    .project-title { font-family: 'Courier New', Courier, monospace; font-size: 1.5rem; font-weight: bold; color: #fff; text-transform: uppercase; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+    /* Tipografía heredada del menú para mayor cohesión visual */
+    .project-title { font-family: 'Inter', sans-serif; font-size: 2rem; font-weight: 900; color: #fff; text-transform: lowercase; margin-bottom: 5px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
     .project-role { font-size: 1rem; color: #ccc; font-weight: 400; margin-bottom: 20px; }
     .external-link-badge { align-self: flex-start; background: transparent; border: 1px solid #fff; color: #fff; padding: 10px 20px; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; border-radius: 4px; }
     .player-container:hover .external-link-badge { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -113,7 +114,7 @@
       .world-container { height: 100%; aspect-ratio: auto; }
       .player-container { aspect-ratio: auto; }
       .hover-overlay { padding: 20px; justify-content: center; }
-      .project-title { font-size: 1.1rem; }
+      .project-title { font-size: 1.5rem; }
       .project-role { font-size: 0.85rem; }
       .text-panel { top: 0; left: 0; right: 0; bottom: 0; border-radius: 0; padding: 30px 20px; }
       .text-content h2 { font-size: 2.2rem; }
@@ -207,23 +208,21 @@
   </main>
 
   <script>
-    // Enlaces de Postimg limpios y de alta calidad (i.postimg.cc)
     const avData = [
-      { title: "SLØTHS “FOR YOUR LOVIN’” VIDEOCLIP (2026)", role: "Director, Actor, Editor & Screenwriter, w/ Nicolás J. Bascompte.", url: "https://www.youtube.com/watch?v=AslbE_4RdU8", bg: "https://i.postimg.cc/Gmp7h00T/lovin.jpg" },
-      { title: "USTICA MEDITERRANEAN PERFORMING ARTS FESTIVAL (2026)", role: "Sound Tech, Photography & Production.", url: "https://www.prolocoustica.com/es/umpaf", bg: "https://i.postimg.cc/rwpnF66x/umpaf-26.jpg" },
-      { title: "BASS BARCELONA ART SUMMER SCHOOL (2025 & 2026)", role: "Production Assistant.", url: "https://www.instagram.com/bass_bcn/?hl=es", bg: "https://i.postimg.cc/bNgVhy5R/bass-26.png" },
-      { title: "PLATES & RECORDS (2021-2022)", role: "Director, Creative Producer, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=T6qLbXSih-Q", bg: "https://i.postimg.cc/c4hkSxzB/plates-records.jpg" },
-      { title: "AUTOPSIA DE UN RELATO PERIODÍSTICO (2020)", role: "Director, Creative AI Technologist, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=-xaM8bPjw6A", bg: "https://i.postimg.cc/sg26DFFZ/autopsia.jpg" }
+      { title: "sløths “for your lovin’” videoclip (2026)", role: "Director, Actor, Editor & Screenwriter, w/ Nicolás J. Bascompte.", url: "https://www.youtube.com/watch?v=AslbE_4RdU8", bg: "https://i.postimg.cc/Gmp7h00T/lovin.jpg" },
+      { title: "ustica mediterranean performing arts festival (2026)", role: "Sound Tech, Photography & Production.", url: "https://www.prolocoustica.com/es/umpaf", bg: "https://i.postimg.cc/P5q3rGGD/UMPAF-26-vertical.jpg" },
+      { title: "bass barcelona art summer school (2025 & 2026)", role: "Production Assistant.", url: "https://www.instagram.com/bass_bcn/?hl=es", bg: "https://i.postimg.cc/bNgVhy5R/bass-26.png" },
+      { title: "plates & records (2021-2022)", role: "Director, Creative Producer, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=T6qLbXSih-Q", bg: "https://i.postimg.cc/c4hkSxzB/plates-records.jpg" },
+      { title: "autopsia de un relato periodístico (2020)", role: "Director, Creative AI Technologist, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=-xaM8bPjw6A", bg: "https://i.postimg.cc/sg26DFFZ/autopsia.jpg" }
     ];
 
-    // Para música recuperamos los iframes visuales de Spotify y mantenemos el mp4
     const musicData = [
-      { title: "SLØTHS “TERRACES” LP (2026)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/2azG6Ac6dywYm2NaNFpZcY?si=H_bRWXHcTN2e-vBcrsIJRw", bg: "https://open.spotify.com/embed/album/2azG6Ac6dywYm2NaNFpZcY?theme=0" },
-      { title: "SLØTHS “FOR YOUR LOVIN’ LIVE AT 7BARBAS” (2026)", role: "Live Musician.", url: "https://www.youtube.com/watch?v=YEL_nkwpyaI", bg: "./music/fondo-sloths-v2.mp4" },
-      { title: "APRIL GALLO “RENT MY HEART FOR FREE” (2025)", role: "Sound Assistant, Mix & Master Assistant w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/album/67ptfnCU7QLBVTFWYcRoqP?si=VP02yy3eT0WSXhxSh6iZGQ", bg: "https://open.spotify.com/embed/album/67ptfnCU7QLBVTFWYcRoqP?theme=0" },
-      { title: "ANANDA MELÉ “EGO” (2024)", role: "Sound Assistant, Mix & Master Assistant w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/track/6M7fFgBd24Oh93eDmS1PQv", bg: "https://open.spotify.com/embed/track/6M7fFgBd24Oh93eDmS1PQv?theme=0" },
-      { title: "RICCI NOSTRA “TUISHO” (2023)", role: "Sound Assistant, Mix & Master Assistant, Arranger, w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/album/6QHmVOiMV4j6f0fURK7WVK", bg: "https://open.spotify.com/embed/album/6QHmVOiMV4j6f0fURK7WVK?theme=0" },
-      { title: "RETORNO VENOSO “LIMFA” (2022)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/1T2ukpicz6VSkH6WEahNP2?si=-J9TiE25Tx2xdsZUYKLbeg", bg: "https://open.spotify.com/embed/album/1T2ukpicz6VSkH6WEahNP2?theme=0" }
+      { title: "sløths “terraces” lp (2026)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/2azG6Ac6dywYm2NaNFpZcY?si=H_bRWXHcTN2e-vBcrsIJRw", bg: "https://open.spotify.com/embed/album/2azG6Ac6dywYm2NaNFpZcY?theme=0" },
+      { title: "sløths “for your lovin’ live at 7barbas” (2026)", role: "Live Musician.", url: "https://www.youtube.com/watch?v=YEL_nkwpyaI", bg: "https://files.catbox.moe/sim0u5.mp4" },
+      { title: "april gallo “rent my heart for free” (2025)", role: "Sound Assistant, Mix & Master Assistant w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/album/67ptfnCU7QLBVTFWYcRoqP?si=VP02yy3eT0WSXhxSh6iZGQ", bg: "https://open.spotify.com/embed/album/67ptfnCU7QLBVTFWYcRoqP?theme=0" },
+      { title: "ananda melé “ego” (2024)", role: "Sound Assistant, Mix & Master Assistant w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/track/6M7fFgBd24Oh93eDmS1PQv", bg: "https://open.spotify.com/embed/track/6M7fFgBd24Oh93eDmS1PQv?theme=0" },
+      { title: "ricci nostra “tuisho” (2023)", role: "Sound Assistant, Mix & Master Assistant, Arranger, w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/album/6QHmVOiMV4j6f0fURK7WVK", bg: "https://open.spotify.com/embed/album/6QHmVOiMV4j6f0fURK7WVK?theme=0" },
+      { title: "retorno venoso “limfa” (2022)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/1T2ukpicz6VSkH6WEahNP2?si=-J9TiE25Tx2xdsZUYKLbeg", bg: "https://open.spotify.com/embed/album/1T2ukpicz6VSkH6WEahNP2?theme=0" }
     ];
 
     function initQueue(queueId, data) {
@@ -233,9 +232,8 @@
       data.forEach((item, index) => {
         const layer = document.createElement('div');
         layer.className = 'media-layer';
-        layer.style.backgroundColor = "#111"; // Fallback visual
+        layer.style.backgroundColor = "#111";
         
-        // MOTOR TRIPLE: MP4, Spotify iFrame, o Imagen estática
         if (item.bg.toLowerCase().endsWith('.mp4')) {
           const video = document.createElement('video');
           video.src = item.bg;
@@ -254,7 +252,6 @@
           iframe.style.width = "100%";
           iframe.style.height = "100%";
           iframe.style.border = "none";
-          // Esta línea mágica protege el bucle: muestra Spotify pero ignora clics
           iframe.style.pointerEvents = "none"; 
           layer.appendChild(iframe);
         } else {
@@ -267,7 +264,6 @@
         layer.dataset.role = item.role;
         slidesContainer.appendChild(layer);
 
-        // Generar la barra de progreso
         const track = document.createElement('div');
         track.className = 'progress-track';
         const fill = document.createElement('div');
@@ -290,14 +286,13 @@
       const titleEl = document.getElementById(`${queueId}-title`);
       const roleEl = document.getElementById(`${queueId}-role`);
       
-      // Limpiar estados
       layers.forEach(l => l.classList.remove('active', 'viewed'));
       tracks.forEach(t => {
         t.classList.remove('active', 'viewed');
         const fill = t.querySelector('.progress-fill');
         if(fill) {
           fill.style.animation = 'none';
-          fill.offsetHeight; // Forzar reflow
+          fill.offsetHeight;
           fill.style.animation = null; 
         }
       });
