@@ -75,10 +75,12 @@
     .player-container:hover .external-link-badge { background: var(--accent); border-color: var(--accent); color: #fff; }
 
     .progress-ui { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; gap: 10px; z-index: 20; pointer-events: none; }
-    .progress-track { flex: 1; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; }
-    .progress-fill { height: 100%; width: 0; background: #fff; }
-    .media-layer.active .progress-fill { animation: fillBar var(--slide-duration) linear forwards; }
-    .media-layer.viewed .progress-fill { width: 100%; animation: none; }
+    .progress-track { flex: 1; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0; background: var(--accent); transition: background 0.5s ease; }
+    
+    .progress-track.active .progress-fill { animation: fillBar var(--slide-duration) linear forwards; }
+    .progress-track.viewed .progress-fill { width: 100%; animation: none; }
+    
     @keyframes fillBar { from { width: 0; } to { width: 100%; } }
 
     /* PANELES DE TEXTO */
@@ -205,22 +207,23 @@
   </main>
 
   <script>
-    // Recuperado exactamente tu array de datos con roles completos y la imagen bass-26.jpg
+    // Enlaces de Spotify pendientes de que saques la URL directa de la imagen
     const musicData = [
-      { title: "SLØTHS “TERRACES” LP (2026)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/2azG6Ac6dywYm2NaNFpZcY?si=H_bRWXHcTN2e-vBcrsIJRw", bg: "music/terraces.jpg" },
-      { title: "SLØTHS “FOR YOUR LOVIN’ LIVE AT 7BARBAS” (2026)", role: "Live Musician.", url: "https://www.youtube.com/watch?v=YEL_nkwpyaI", bg: "music/fondo-sloths-v2.mp4" },
-      { title: "APRIL GALLO “RENT MY HEART FOR FREE” (2025)", role: "Sound Assistant, Mix & Master Assistant w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/album/67ptfnCU7QLBVTFWYcRoqP?si=VP02yy3eT0WSXhxSh6iZGQ", bg: "music/april-gallo.jpeg" },
-      { title: "ANANDA MELÉ “EGO” (2024)", role: "Sound Assistant, Mix & Master Assistant w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/track/6M7fFgBd24Oh93eDmS1PQv", bg: "music/ananda-mele.jpg" },
-      { title: "RICCI NOSTRA “TUISHO” (2023)", role: "Sound Assistant, Mix & Master Assistant, Arranger, w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/album/6QHmVOiMV4j6f0fURK7WVK", bg: "music/ricci-nostra.jpg" },
-      { title: "RETORNO VENOSO “LIMFA” (2022)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/1T2ukpicz6VSkH6WEahNP2?si=-J9TiE25Tx2xdsZUYKLbeg", bg: "music/limfa.jpeg" }
+      { title: "SLØTHS “TERRACES” LP (2026)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/2azG6Ac6dywYm2NaNFpZcY?si=H_bRWXHcTN2e-vBcrsIJRw", bg: "PEGAR_LINK_DIRECTO_SPOTIFY_AQUI.jpg" },
+      { title: "SLØTHS “FOR YOUR LOVIN’ LIVE AT 7BARBAS” (2026)", role: "Live Musician.", url: "https://www.youtube.com/watch?v=YEL_nkwpyaI", bg: "./music/fondo-sloths-v2.mp4" },
+      { title: "APRIL GALLO “RENT MY HEART FOR FREE” (2025)", role: "Sound Assistant, Mix & Master Assistant w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/album/67ptfnCU7QLBVTFWYcRoqP?si=VP02yy3eT0WSXhxSh6iZGQ", bg: "PEGAR_LINK_DIRECTO_SPOTIFY_AQUI.jpg" },
+      { title: "ANANDA MELÉ “EGO” (2024)", role: "Sound Assistant, Mix & Master Assistant w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/track/6M7fFgBd24Oh93eDmS1PQv", bg: "PEGAR_LINK_DIRECTO_SPOTIFY_AQUI.jpg" },
+      { title: "RICCI NOSTRA “TUISHO” (2023)", role: "Sound Assistant, Mix & Master Assistant, Arranger, w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/album/6QHmVOiMV4j6f0fURK7WVK", bg: "PEGAR_LINK_DIRECTO_SPOTIFY_AQUI.jpg" },
+      { title: "RETORNO VENOSO “LIMFA” (2022)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/1T2ukpicz6VSkH6WEahNP2?si=-J9TiE25Tx2xdsZUYKLbeg", bg: "PEGAR_LINK_DIRECTO_SPOTIFY_AQUI.jpg" }
     ];
 
+    // Enlaces formateados de Postimages
     const avData = [
-      { title: "SLØTHS “FOR YOUR LOVIN’” VIDEOCLIP (2026)", role: "Director, Actor, Editor & Screenwriter, w/ Nicolás J. Bascompte.", url: "https://www.youtube.com/watch?v=AslbE_4RdU8", bg: "audiovisual/lovin.jpg" },
-      { title: "USTICA MEDITERRANEAN PERFORMING ARTS FESTIVAL (2026)", role: "Sound Tech, Photography & Production.", url: "https://www.prolocoustica.com/es/umpaf", bg: "audiovisual/umpaf-26.jpg" },
-      { title: "BASS BARCELONA ART SUMMER SCHOOL (2025 & 2026)", role: "Production Assistant.", url: "https://www.instagram.com/bass_bcn/?hl=es", bg: "audiovisual/bass-26.jpg" },
-      { title: "PLATES & RECORDS (2021-2022)", role: "Director, Creative Producer, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=T6qLbXSih-Q", bg: "audiovisual/plates-records.jpg" },
-      { title: "AUTOPSIA DE UN RELATO PERIODÍSTICO (2020)", role: "Director, Creative AI Technologist, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=-xaM8bPjw6A", bg: "audiovisual/autopsia.jpg" }
+      { title: "SLØTHS “FOR YOUR LOVIN’” VIDEOCLIP (2026)", role: "Director, Actor, Editor & Screenwriter, w/ Nicolás J. Bascompte.", url: "https://www.youtube.com/watch?v=AslbE_4RdU8", bg: "https://i.postimg.cc/qz9Xj5vp/image.jpg" },
+      { title: "USTICA MEDITERRANEAN PERFORMING ARTS FESTIVAL (2026)", role: "Sound Tech, Photography & Production.", url: "https://www.prolocoustica.com/es/umpaf", bg: "https://i.postimg.cc/3dPCncxr/image.jpg" },
+      { title: "BASS BARCELONA ART SUMMER SCHOOL (2025 & 2026)", role: "Production Assistant.", url: "https://www.instagram.com/bass_bcn/?hl=es", bg: "https://i.postimg.cc/rKdNGkMd/image.jpg" },
+      { title: "PLATES & RECORDS (2021-2022)", role: "Director, Creative Producer, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=T6qLbXSih-Q", bg: "PON_AQUI_EL_LINK_DIRECTO_DE_PLATES.jpg" },
+      { title: "AUTOPSIA DE UN RELATO PERIODÍSTICO (2020)", role: "Director, Creative AI Technologist, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=-xaM8bPjw6A", bg: "https://i.postimg.cc/w7Sc0Gj6/image.jpg" }
     ];
 
     function initQueue(queueId, data) {
@@ -230,9 +233,8 @@
       data.forEach((item, index) => {
         const layer = document.createElement('div');
         layer.className = 'media-layer';
-        layer.style.backgroundColor = "#111"; // Fallback
+        layer.style.backgroundColor = "#111"; // Fallback visual
         
-        // Detecta si es video o foto automáticamente
         if (item.bg.toLowerCase().endsWith('.mp4')) {
           const video = document.createElement('video');
           video.src = item.bg;
@@ -267,25 +269,38 @@
     initQueue('av', avData);
     initQueue('music', musicData);
 
-    // Estado cerrado para que no pete el carrusel
     const queueState = { av: 0, music: 0 };
     let avInterval, musicInterval;
     const slideDuration = 6000;
 
     function playQueue(queueId, data) {
       const layers = document.querySelectorAll(`#${queueId}-slides .media-layer`);
+      const tracks = document.querySelectorAll(`#${queueId}-progress .progress-track`);
       const titleEl = document.getElementById(`${queueId}-title`);
       const roleEl = document.getElementById(`${queueId}-role`);
       
       layers.forEach(l => l.classList.remove('active', 'viewed'));
+      tracks.forEach(t => {
+        t.classList.remove('active', 'viewed');
+        const fill = t.querySelector('.progress-fill');
+        if(fill) {
+          fill.style.animation = 'none';
+          fill.offsetHeight;
+          fill.style.animation = null; 
+        }
+      });
       
       for(let i = 0; i < queueState[queueId]; i++) {
         layers[i].classList.add('viewed');
+        tracks[i].classList.add('viewed');
       }
 
       const activeLayer = layers[queueState[queueId]];
-      if(activeLayer) {
+      const activeTrack = tracks[queueState[queueId]];
+
+      if(activeLayer && activeTrack) {
         activeLayer.classList.add('active');
+        activeTrack.classList.add('active');
         titleEl.textContent = activeLayer.dataset.title;
         roleEl.textContent = activeLayer.dataset.role;
       }
@@ -293,7 +308,10 @@
       queueState[queueId]++;
       if (queueState[queueId] >= data.length) {
         queueState[queueId] = 0; 
-        setTimeout(() => { layers.forEach(l => l.classList.remove('viewed')); }, slideDuration);
+        setTimeout(() => { 
+          layers.forEach(l => l.classList.remove('viewed')); 
+          tracks.forEach(t => t.classList.remove('viewed')); 
+        }, slideDuration);
       }
     }
 
