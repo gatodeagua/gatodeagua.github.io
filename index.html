@@ -41,11 +41,9 @@
     .nav-item { color: var(--text-color); font-size: 1.4rem; font-weight: 900; text-transform: lowercase; letter-spacing: 1px; opacity: 0.4; background: none; border: none; text-align: left; cursor: pointer; transition: all 0.3s ease; }
     .nav-item:hover, .nav-item.active { opacity: 1; color: var(--accent); transform: translateX(5px); }
 
-    /* SWITCH ON/OFF REDISEÑADO */
+    /* SWITCH ON/OFF */
     .switch-wrapper { display: flex; flex-direction: column; gap: 10px; }
     .switch-label { font-size: 0.8rem; text-transform: lowercase; font-variant: small-caps; letter-spacing: 2px; opacity: 0.5; font-weight: 900; }
-    
-    /* Botón con coloración inversa */
     .toggle-btn { background: var(--text-color); border: 1px solid var(--text-color); color: var(--bg-color); padding: 12px 16px; font-size: 0.95rem; font-weight: 900; font-variant: small-caps; text-transform: lowercase; letter-spacing: 1px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-radius: 6px; transition: all 0.3s ease; }
     .toggle-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
     .status-dot { width: 8px; height: 8px; background-color: var(--bg-color); border-radius: 50%; }
@@ -64,20 +62,21 @@
     body.mode-music #world-music { display: block; }
 
     /* REPRODUCTOR */
-    .player-container { width: 100%; height: 100%; background-color: #000; border: 1px solid var(--border-color); position: relative; overflow: hidden; border-radius: 4px; }
+    .player-container { width: 100%; height: 100%; background-color: #000; border: 1px solid var(--border-color); position: relative; overflow: hidden; border-radius: 4px; cursor: pointer; }
+    
     .media-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0; transition: opacity 0.8s ease; }
     .media-layer.active { opacity: 1; }
+    .media-layer video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 
     /* UI: OVERLAY DE HOVER/TAP */
-    .hover-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; opacity: 0; transition: opacity 0.3s ease; z-index: 15; }
+    .hover-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; opacity: 0; transition: opacity 0.3s ease; z-index: 15; pointer-events: none; }
     .player-container:hover .hover-overlay { opacity: 1; }
     
-    .project-title { font-family: 'Courier New', Courier, monospace; font-size: 1.5rem; font-weight: bold; color: #fff; text-transform: uppercase; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); pointer-events: none; }
-    .project-role { font-size: 1rem; color: #ccc; font-weight: 400; margin-bottom: 20px; pointer-events: none; }
+    .project-title { font-family: 'Courier New', Courier, monospace; font-size: 1.5rem; font-weight: bold; color: #fff; text-transform: uppercase; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+    .project-role { font-size: 1rem; color: #ccc; font-weight: 400; margin-bottom: 20px; }
     
-    /* Botón de enlace (Z-index alto para asegurar click) */
-    .external-link-btn { align-self: flex-start; background: transparent; border: 1px solid #fff; color: #fff; padding: 10px 20px; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: all 0.3s ease; border-radius: 4px; pointer-events: auto; z-index: 20; }
-    .external-link-btn:hover { background: var(--accent); border-color: var(--accent); }
+    .external-link-badge { align-self: flex-start; background: transparent; border: 1px solid #fff; color: #fff; padding: 10px 20px; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; border-radius: 4px; }
+    .player-container:hover .external-link-badge { background: var(--accent); border-color: var(--accent); color: #fff; }
 
     /* UI: Barras de progreso */
     .progress-ui { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; gap: 10px; z-index: 20; pointer-events: none; }
@@ -157,29 +156,28 @@
       <div class="world-container">
         <!-- AV -->
         <div class="world" id="world-av">
-          <div class="player-container">
+          <div class="player-container" onclick="openActiveLink('av')">
             <div class="progress-ui" id="av-progress"></div>
             <div id="av-slides"></div>
             
             <div class="hover-overlay">
               <div class="project-title" id="av-title"></div>
               <div class="project-role" id="av-role"></div>
-              <!-- Link gestionado via ID en JS para asegurar clic -->
-              <button class="external-link-btn" id="av-link-btn">Ver Proyecto ↗</button>
+              <div class="external-link-badge">Ver Proyecto ↗</div>
             </div>
           </div>
         </div>
         
         <!-- MUSIC -->
         <div class="world" id="world-music">
-          <div class="player-container">
+          <div class="player-container" onclick="openActiveLink('music')">
             <div class="progress-ui" id="music-progress"></div>
             <div id="music-slides"></div>
             
             <div class="hover-overlay">
               <div class="project-title" id="music-title"></div>
               <div class="project-role" id="music-role"></div>
-              <button class="external-link-btn" id="music-link-btn">Escuchar ↗</button>
+              <div class="external-link-badge">Escuchar ↗</div>
             </div>
           </div>
         </div>
@@ -211,22 +209,22 @@
   </main>
 
   <script>
-    // He cambiado las URLs de Unsplash por las estables de source.unsplash para evitar errores de renderizado.
+    // Se han implementado los nombres exactos de tu directorio local
     const musicData = [
-      { title: "SLØTHS “TERRACES” LP (2026)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/2azG6Ac6dywYm2NaNFpZcY?si=H_bRWXHcTN2e-vBcrsIJRw", bg: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=80" },
-      { title: "SLØTHS “FOR YOUR LOVIN’ LIVE AT 7BARBAS” (2026)", role: "Live Musician.", url: "https://www.youtube.com/watch?v=YEL_nkwpyaI", bg: "https://images.unsplash.com/photo-1516280440502-85987c9c049d?auto=format&fit=crop&w=1200&q=80" },
-      { title: "APRIL GALLO “RENT MY HEART FOR FREE” (2025)", role: "Sound Assistant, Mix & Master Assistant w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/album/67ptfnCU7QLBVTFWYcRoqP?si=VP02yy3eT0WSXhxSh6iZGQ", bg: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=80" },
-      { title: "ANANDA MELÉ “EGO” (2024)", role: "Sound Assistant, Mix & Master Assistant w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/track/6M7fFgBd24Oh93eDmS1PQv", bg: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80" },
-      { title: "RICCI NOSTRA “TUISHO” (2023)", role: "Sound Assistant, Mix & Master Assistant, Arranger, w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/album/6QHmVOiMV4j6f0fURK7WVK", bg: "https://images.unsplash.com/photo-1519638399535-1b036603ac77?auto=format&fit=crop&w=1200&q=80" },
-      { title: "RETORNO VENOSO “LIMFA” (2022)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/1T2ukpicz6VSkH6WEahNP2?si=-J9TiE25Tx2xdsZUYKLbeg", bg: "https://images.unsplash.com/photo-1493225457124-a1a2a5f59bd6?auto=format&fit=crop&w=1200&q=80" }
+      { title: "SLØTHS “TERRACES” LP (2026)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/2azG6Ac6dywYm2NaNFpZcY?si=H_bRWXHcTN2e-vBcrsIJRw", bg: "music/terraces.jpg" },
+      { title: "SLØTHS “FOR YOUR LOVIN’ LIVE AT 7BARBAS” (2026)", role: "Live Musician.", url: "https://www.youtube.com/watch?v=YEL_nkwpyaI", bg: "music/fondo-sloths-v2.mp4" },
+      { title: "APRIL GALLO “RENT MY HEART FOR FREE” (2025)", role: "Sound Assistant, Mix & Master Assistant w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/album/67ptfnCU7QLBVTFWYcRoqP?si=VP02yy3eT0WSXhxSh6iZGQ", bg: "music/april-gallo.jpeg" },
+      { title: "ANANDA MELÉ “EGO” (2024)", role: "Sound Assistant, Mix & Master Assistant w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/track/6M7fFgBd24Oh93eDmS1PQv", bg: "music/ananda-mele.jpg" },
+      { title: "RICCI NOSTRA “TUISHO” (2023)", role: "Sound Assistant, Mix & Master Assistant, Arranger, w/ Genaro Mosquera.", url: "https://open.spotify.com/intl-es/album/6QHmVOiMV4j6f0fURK7WVK", bg: "music/ricci-nostra.jpg" },
+      { title: "RETORNO VENOSO “LIMFA” (2022)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/1T2ukpicz6VSkH6WEahNP2?si=-J9TiE25Tx2xdsZUYKLbeg", bg: "music/limfa.jpeg" }
     ];
 
     const avData = [
-      { title: "SLØTHS “FOR YOUR LOVIN’” VIDEOCLIP (2026)", role: "Director, Actor, Editor & Screenwriter, w/ Nicolás J. Bascompte.", url: "https://www.youtube.com/watch?v=AslbE_4RdU8", bg: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80" },
-      { title: "USTICA MEDITERRANEAN PERFORMING ARTS FESTIVAL (2026)", role: "Sound Tech, Photography & Production.", url: "https://www.prolocoustica.com/es/umpaf", bg: "https://images.unsplash.com/photo-1601506521937-0121a7fc2a6b?auto=format&fit=crop&w=1200&q=80" },
-      { title: "BASS BARCELONA ART SUMMER SCHOOL (2025 & 2026)", role: "Production Assistant.", url: "https://www.instagram.com/bass_bcn/?hl=es", bg: "https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=1200&q=80" },
-      { title: "PLATES & RECORDS (2021-2022)", role: "Director, Creative Producer, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=T6qLbXSih-Q", bg: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80" },
-      { title: "AUTOPSIA DE UN RELATO PERIODÍSTICO (2020)", role: "Director, Creative AI Technologist, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=-xaM8bPjw6A", bg: "https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?auto=format&fit=crop&w=1200&q=80" }
+      { title: "SLØTHS “FOR YOUR LOVIN’” VIDEOCLIP (2026)", role: "Director, Actor, Editor & Screenwriter, w/ Nicolás J. Bascompte.", url: "https://www.youtube.com/watch?v=AslbE_4RdU8", bg: "audiovisual/lovin.jpg" },
+      { title: "USTICA MEDITERRANEAN PERFORMING ARTS FESTIVAL (2026)", role: "Sound Tech, Photography & Production.", url: "https://www.prolocoustica.com/es/umpaf", bg: "audiovisual/umpaf-26.jpg" },
+      { title: "BASS BARCELONA ART SUMMER SCHOOL (2025 & 2026)", role: "Production Assistant.", url: "https://www.instagram.com/bass_bcn/?hl=es", bg: "audiovisual/UMPAF-26-vertical.jpg" }, // Comodín hasta que tengas la de BASS
+      { title: "PLATES & RECORDS (2021-2022)", role: "Director, Creative Producer, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=T6qLbXSih-Q", bg: "audiovisual/plates-records.jpg" },
+      { title: "AUTOPSIA DE UN RELATO PERIODÍSTICO (2020)", role: "Director, Creative AI Technologist, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=-xaM8bPjw6A", bg: "audiovisual/autopsia.jpg" }
     ];
 
     function initQueue(queueId, data) {
@@ -236,8 +234,21 @@
       data.forEach((item, index) => {
         const layer = document.createElement('div');
         layer.className = 'media-layer';
-        // Sintaxis segura para cargar la imagen de fondo
-        layer.style.backgroundImage = "url('" + item.bg + "')";
+        layer.style.backgroundColor = "#111"; // Fallback oscuro por si tardan en cargar
+        
+        // El motor ahora detecta si le has tirado un MP4 o una foto
+        if (item.bg.toLowerCase().endsWith('.mp4')) {
+          const video = document.createElement('video');
+          video.src = item.bg;
+          video.autoplay = true;
+          video.loop = true;
+          video.muted = true;
+          video.playsInline = true;
+          layer.appendChild(video);
+        } else {
+          layer.style.backgroundImage = "url('" + item.bg + "')";
+        }
+        
         layer.dataset.index = index;
         layer.dataset.url = item.url;
         layer.dataset.title = item.title;
@@ -297,18 +308,13 @@
       musicInterval = setInterval(() => playQueue('music', musicData, 'currentMusicIndex'), slideDuration);
     }
 
-    // EVENT LISTENERS SEGUROS PARA LOS LINKS EXTERNOS
-    document.getElementById('av-link-btn').addEventListener('click', () => {
-      const activeLayer = document.querySelector('#av-slides .media-layer.active');
-      if(activeLayer && activeLayer.dataset.url) window.open(activeLayer.dataset.url, '_blank');
-    });
+    window.openActiveLink = function(queueId) {
+      const activeLayer = document.querySelector(`#${queueId}-slides .media-layer.active`);
+      if(activeLayer && activeLayer.dataset.url) {
+        window.open(activeLayer.dataset.url, '_blank');
+      }
+    };
 
-    document.getElementById('music-link-btn').addEventListener('click', () => {
-      const activeLayer = document.querySelector('#music-slides .media-layer.active');
-      if(activeLayer && activeLayer.dataset.url) window.open(activeLayer.dataset.url, '_blank');
-    });
-
-    // LÓGICA DE NAVEGACIÓN
     const body = document.body;
     const toggleBtn = document.getElementById('toggleMode');
     const btnText = document.getElementById('btn-text');
