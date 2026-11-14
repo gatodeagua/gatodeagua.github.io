@@ -197,7 +197,7 @@
         <h2>contact<span class="dot">.</span></h2>
         <div class="contact-links">
           <a href="mailto:gallodeaguavisuals@gmail.com">email</a>
-          <a href="https://wa.me/+34648144432">whatsapp</a>
+          <a href="https://wa.me/">whatsapp</a>
         </div>
         <div class="cv-section">
           <a href="https://drive.google.com/file/d/1IABn0l7OJexJzpb0LODkphdX29g29rUP/view?usp=drive_link" target="_blank">artistic cv ↗</a>
@@ -209,7 +209,6 @@
   </main>
 
   <script>
-    // Se han implementado los nombres exactos de tu directorio local
     const musicData = [
       { title: "SLØTHS “TERRACES” LP (2026)", role: "Live Musician, Composer, Prod. & Sound Design.", url: "https://open.spotify.com/intl-es/album/2azG6Ac6dywYm2NaNFpZcY?si=H_bRWXHcTN2e-vBcrsIJRw", bg: "music/terraces.jpg" },
       { title: "SLØTHS “FOR YOUR LOVIN’ LIVE AT 7BARBAS” (2026)", role: "Live Musician.", url: "https://www.youtube.com/watch?v=YEL_nkwpyaI", bg: "music/fondo-sloths-v2.mp4" },
@@ -222,7 +221,7 @@
     const avData = [
       { title: "SLØTHS “FOR YOUR LOVIN’” VIDEOCLIP (2026)", role: "Director, Actor, Editor & Screenwriter, w/ Nicolás J. Bascompte.", url: "https://www.youtube.com/watch?v=AslbE_4RdU8", bg: "audiovisual/lovin.jpg" },
       { title: "USTICA MEDITERRANEAN PERFORMING ARTS FESTIVAL (2026)", role: "Sound Tech, Photography & Production.", url: "https://www.prolocoustica.com/es/umpaf", bg: "audiovisual/umpaf-26.jpg" },
-      { title: "BASS BARCELONA ART SUMMER SCHOOL (2025 & 2026)", role: "Production Assistant.", url: "https://www.instagram.com/bass_bcn/?hl=es", bg: "audiovisual/bass-26.jpg" }, // Comodín hasta que tengas la de BASS
+      { title: "BASS BARCELONA ART SUMMER SCHOOL (2025 & 2026)", role: "Production Assistant.", url: "https://www.instagram.com/bass_bcn/?hl=es", bg: "audiovisual/bass-26.jpg" },
       { title: "PLATES & RECORDS (2021-2022)", role: "Director, Creative Producer, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=T6qLbXSih-Q", bg: "audiovisual/plates-records.jpg" },
       { title: "AUTOPSIA DE UN RELATO PERIODÍSTICO (2020)", role: "Director, Creative AI Technologist, AV Designer and Screenwriter.", url: "https://www.youtube.com/watch?v=-xaM8bPjw6A", bg: "audiovisual/autopsia.jpg" }
     ];
@@ -234,9 +233,8 @@
       data.forEach((item, index) => {
         const layer = document.createElement('div');
         layer.className = 'media-layer';
-        layer.style.backgroundColor = "#111"; // Fallback oscuro por si tardan en cargar
+        layer.style.backgroundColor = "#111";
         
-        // El motor ahora detecta si le has tirado un MP4 o una foto
         if (item.bg.toLowerCase().endsWith('.mp4')) {
           const video = document.createElement('video');
           video.src = item.bg;
@@ -267,45 +265,45 @@
     initQueue('av', avData);
     initQueue('music', musicData);
 
-    let currentAvIndex = 0;
-    let currentMusicIndex = 0;
+    // Estado local para los índices
+    const queueState = { av: 0, music: 0 };
     let avInterval, musicInterval;
     const slideDuration = 6000;
 
-    function playQueue(queueId, data, currentIndexVar) {
+    function playQueue(queueId, data) {
       const layers = document.querySelectorAll(`#${queueId}-slides .media-layer`);
       const titleEl = document.getElementById(`${queueId}-title`);
       const roleEl = document.getElementById(`${queueId}-role`);
       
       layers.forEach(l => l.classList.remove('active', 'viewed'));
       
-      for(let i = 0; i < window[currentIndexVar]; i++) {
+      for(let i = 0; i < queueState[queueId]; i++) {
         layers[i].classList.add('viewed');
       }
 
-      const activeLayer = layers[window[currentIndexVar]];
+      const activeLayer = layers[queueState[queueId]];
       activeLayer.classList.add('active');
       
       titleEl.textContent = activeLayer.dataset.title;
       roleEl.textContent = activeLayer.dataset.role;
 
-      window[currentIndexVar]++;
-      if (window[currentIndexVar] >= data.length) {
-        window[currentIndexVar] = 0; 
+      queueState[queueId]++;
+      if (queueState[queueId] >= data.length) {
+        queueState[queueId] = 0; 
         setTimeout(() => { layers.forEach(l => l.classList.remove('viewed')); }, slideDuration);
       }
     }
 
     function startAv() {
       clearInterval(musicInterval);
-      playQueue('av', avData, 'currentAvIndex');
-      avInterval = setInterval(() => playQueue('av', avData, 'currentAvIndex'), slideDuration);
+      playQueue('av', avData);
+      avInterval = setInterval(() => playQueue('av', avData), slideDuration);
     }
 
     function startMusic() {
       clearInterval(avInterval);
-      playQueue('music', musicData, 'currentMusicIndex');
-      musicInterval = setInterval(() => playQueue('music', musicData, 'currentMusicIndex'), slideDuration);
+      playQueue('music', musicData);
+      musicInterval = setInterval(() => playQueue('music', musicData), slideDuration);
     }
 
     window.openActiveLink = function(queueId) {
